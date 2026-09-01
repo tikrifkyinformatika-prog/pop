@@ -1,0 +1,3058 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAR IDOL — K-Pop Girl Group Simulator</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#080b18;
+    --panel:#11162b;
+    --panel2:#171d38;
+    --pink:#ff62b5;
+    --purple:#8b6cff;
+    --cyan:#62ddff;
+    --gold:#ffd86b;
+    --text:#f8f8ff;
+    --muted:#a6acc7;
+    --border:rgba(255,255,255,.1);
+}
+
+body{
+    background:
+        radial-gradient(circle at 20% 0%,#241344 0%,transparent 35%),
+        radial-gradient(circle at 90% 20%,#102e45 0%,transparent 30%),
+        var(--bg);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    height:70px;
+    background:rgba(8,11,24,.85);
+    backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 30px;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:900;
+    letter-spacing:2px;
+}
+
+.logo span{
+    color:var(--pink);
+}
+
+.money{
+    display:flex;
+    gap:12px;
+}
+
+.money div{
+    background:#151b32;
+    padding:9px 13px;
+    border-radius:10px;
+    font-size:13px;
+    border:1px solid var(--border);
+}
+
+/* ================= APP ================= */
+
+.app{
+    display:flex;
+    min-height:calc(100vh - 70px);
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    width:230px;
+    background:rgba(10,14,29,.9);
+    border-right:1px solid var(--border);
+    padding:22px 15px;
+    flex-shrink:0;
+}
+
+.menu-title{
+    color:#666d89;
+    font-size:10px;
+    font-weight:bold;
+    letter-spacing:2px;
+    margin:15px 12px 10px;
+}
+
+.menu button{
+    width:100%;
+    background:none;
+    border:0;
+    color:var(--muted);
+    padding:13px;
+    text-align:left;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:13px;
+    margin-bottom:4px;
+}
+
+.menu button:hover,
+.menu button.active{
+    background:linear-gradient(
+        90deg,
+        rgba(255,98,181,.18),
+        rgba(139,108,255,.1)
+    );
+    color:white;
+}
+
+/* ================= CONTENT ================= */
+
+.content{
+    flex:1;
+    padding:30px;
+    max-width:1500px;
+    margin:auto;
+    width:100%;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.page-title{
+    font-size:30px;
+    font-weight:900;
+    margin-bottom:6px;
+}
+
+.page-subtitle{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:25px;
+}
+
+/* ================= CARDS ================= */
+
+.card{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.015)
+        );
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 15px 50px rgba(0,0,0,.18);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+    border:0;
+    border-radius:11px;
+    padding:12px 18px;
+    cursor:pointer;
+    color:white;
+    font-weight:bold;
+    background:linear-gradient(
+        135deg,
+        var(--pink),
+        var(--purple)
+    );
+    transition:.2s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.12);
+}
+
+.btn.secondary{
+    background:#202741;
+    border:1px solid var(--border);
+}
+
+.btn.danger{
+    background:#52243c;
+}
+
+/* ================= GROUP CREATOR ================= */
+
+.creator{
+    max-width:700px;
+}
+
+label{
+    display:block;
+    color:var(--muted);
+    font-size:12px;
+    margin:16px 0 7px;
+}
+
+input,
+select{
+    width:100%;
+    background:#0c1021;
+    border:1px solid var(--border);
+    border-radius:10px;
+    color:white;
+    padding:13px;
+    outline:none;
+}
+
+input:focus,
+select:focus{
+    border-color:var(--pink);
+}
+
+.member-count{
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    gap:6px;
+}
+
+.member-count button{
+    background:#151b32;
+    color:#aeb5d0;
+    border:1px solid var(--border);
+    padding:10px 5px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.member-count button.selected{
+    background:var(--pink);
+    color:white;
+}
+
+/* ================= GROUP CARD ================= */
+
+.group-card{
+    position:relative;
+    overflow:hidden;
+}
+
+.group-cover{
+    height:170px;
+    border-radius:13px;
+    background:
+        linear-gradient(
+            135deg,
+            #31184c,
+            #151b3c
+        );
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:65px;
+    margin-bottom:17px;
+}
+
+.group-name{
+    font-size:21px;
+    font-weight:900;
+}
+
+.group-info{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:6px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    margin-top:16px;
+}
+
+.stats div{
+    background:#0c1021;
+    padding:9px;
+    text-align:center;
+    border-radius:8px;
+    font-size:11px;
+    color:var(--muted);
+}
+
+.stats strong{
+    display:block;
+    color:white;
+    font-size:15px;
+}
+
+/* ================= MEMBERS ================= */
+
+.member-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.member{
+    background:#11162b;
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+}
+
+.member-avatar{
+    height:220px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #ffd8c4,
+            #c8799d 28%,
+            #28203c 65%
+        );
+}
+
+.body{
+    width:85px;
+    height:145px;
+    background:#202c61;
+    border-radius:45px 45px 8px 8px;
+    position:absolute;
+    bottom:-20px;
+}
+
+.head{
+    width:75px;
+    height:85px;
+    background:#f4c4aa;
+    border-radius:45%;
+    position:absolute;
+    top:43px;
+    z-index:3;
+}
+
+.hair{
+    width:91px;
+    height:100px;
+    border-radius:50% 50% 35% 35%;
+    position:absolute;
+    top:31px;
+    z-index:4;
+}
+
+.hair.black{
+    background:#17131b;
+}
+
+.hair.brown{
+    background:#6a3928;
+}
+
+.hair.blonde{
+    background:#e5bd63;
+}
+
+.hair.pink{
+    background:#d86d9f;
+}
+
+.hair.blue{
+    background:#496fc7;
+}
+
+.face{
+    position:absolute;
+    top:75px;
+    z-index:5;
+    font-size:12px;
+}
+
+.member-info{
+    padding:14px;
+}
+
+.member-info h3{
+    font-size:16px;
+}
+
+.member-info p{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:4px;
+}
+
+.member-actions{
+    display:flex;
+    gap:5px;
+    margin-top:10px;
+}
+
+.member-actions button{
+    flex:1;
+    padding:9px 3px;
+    border-radius:8px;
+    border:0;
+    background:#202741;
+    color:white;
+    cursor:pointer;
+    font-size:11px;
+}
+
+/* ================= MAKEOVER ================= */
+
+.makeover{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    gap:20px;
+}
+
+.avatar-large{
+    height:400px;
+    position:relative;
+    overflow:hidden;
+    border-radius:18px;
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #ffd8c4,
+            #b45e91 30%,
+            #151a36 70%
+        );
+}
+
+.avatar-large .body{
+    transform:scale(1.7);
+    bottom:-40px;
+}
+
+.avatar-large .head{
+    transform:scale(1.5);
+    top:90px;
+}
+
+.avatar-large .hair{
+    transform:scale(1.55);
+    top:65px;
+}
+
+.avatar-large .face{
+    transform:scale(1.4);
+    top:150px;
+}
+
+.options{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:8px;
+}
+
+.option{
+    background:#11162b;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px;
+    cursor:pointer;
+    text-align:center;
+    color:#c1c6da;
+    font-size:11px;
+}
+
+.option:hover{
+    border-color:var(--pink);
+}
+
+/* ================= MAP ================= */
+
+.map-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.map{
+    height:210px;
+    border-radius:17px;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    border:1px solid var(--border);
+    cursor:pointer;
+    overflow:hidden;
+    position:relative;
+    transition:.25s;
+}
+
+.map:hover{
+    transform:translateY(-5px);
+}
+
+.map:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        transparent 25%,
+        rgba(0,0,0,.8)
+    );
+}
+
+.map > *{
+    position:relative;
+    z-index:2;
+}
+
+.map h3{
+    font-size:20px;
+}
+
+.map p{
+    color:#c3c7d7;
+    font-size:11px;
+    margin-top:5px;
+}
+
+.stage1{
+    background:
+        radial-gradient(circle,#e76aa8,#321b4e 50%,#080b18);
+}
+
+.stage2{
+    background:
+        radial-gradient(circle,#54d7ff,#102e45 45%,#080b18);
+}
+
+.stage3{
+    background:
+        radial-gradient(circle,#ffdc6b,#5a3024 45%,#080b18);
+}
+
+.stage4{
+    background:
+        radial-gradient(circle,#9a72ff,#251846 45%,#080b18);
+}
+
+.stage5{
+    background:
+        radial-gradient(circle,#65efbb,#173b35 45%,#080b18);
+}
+
+.stage6{
+    background:
+        radial-gradient(circle,#ff6688,#471a36 45%,#080b18);
+}
+
+/* ================= PERFORMANCE ================= */
+
+.performance{
+    text-align:center;
+}
+
+.stage{
+    height:500px;
+    border-radius:25px;
+    overflow:hidden;
+    position:relative;
+    background:
+        radial-gradient(
+            ellipse at 50% 15%,
+            #f3a6e8 0%,
+            #47226e 20%,
+            #11112e 50%,
+            #050711 80%
+        );
+    border:1px solid var(--border);
+}
+
+.laser{
+    position:absolute;
+    width:2px;
+    height:100%;
+    background:linear-gradient(
+        transparent,
+        rgba(98,221,255,.8),
+        transparent
+    );
+    animation:laser 2s infinite alternate;
+}
+
+.l1{left:20%;transform:rotate(20deg);}
+.l2{left:40%;transform:rotate(-12deg);}
+.l3{right:30%;transform:rotate(15deg);}
+.l4{right:12%;transform:rotate(-20deg);}
+
+@keyframes laser{
+    from{opacity:.2;}
+    to{opacity:1;}
+}
+
+.stage-floor{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:180px;
+    background:
+        linear-gradient(
+            transparent,
+            rgba(13,16,45,.95)
+        );
+}
+
+.dancers{
+    position:absolute;
+    bottom:65px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:35px;
+    width:90%;
+}
+
+.dancer{
+    width:50px;
+    height:170px;
+    position:relative;
+    animation:dance .75s infinite alternate ease-in-out;
+}
+
+.dancer:nth-child(2){animation-delay:.08s;}
+.dancer:nth-child(3){animation-delay:.16s;}
+.dancer:nth-child(4){animation-delay:.24s;}
+.dancer:nth-child(5){animation-delay:.32s;}
+.dancer:nth-child(6){animation-delay:.4s;}
+.dancer:nth-child(7){animation-delay:.48s;}
+
+@keyframes dance{
+    from{
+        transform:translateY(0) rotate(-4deg);
+    }
+    to{
+        transform:translateY(-22px) rotate(4deg);
+    }
+}
+
+.dancer .dhead{
+    position:absolute;
+    top:0;
+    left:7px;
+    width:37px;
+    height:42px;
+    background:#f3c4aa;
+    border-radius:50%;
+}
+
+.dancer .dhair{
+    position:absolute;
+    top:-7px;
+    left:2px;
+    width:47px;
+    height:45px;
+    background:#17131b;
+    border-radius:50%;
+}
+
+.dancer .dbody{
+    position:absolute;
+    top:38px;
+    left:9px;
+    width:32px;
+    height:80px;
+    background:var(--pink);
+    border-radius:10px 10px 4px 4px;
+}
+
+.dancer .arm{
+    position:absolute;
+    top:47px;
+    width:9px;
+    height:65px;
+    background:#f3c4aa;
+    border-radius:10px;
+}
+
+.dancer .a1{
+    left:0;
+    transform:rotate(25deg);
+}
+
+.dancer .a2{
+    right:0;
+    transform:rotate(-25deg);
+}
+
+.dancer .leg{
+    position:absolute;
+    top:110px;
+    width:10px;
+    height:60px;
+    background:#16192c;
+    border-radius:10px;
+}
+
+.dancer .l1{left:12px;}
+.dancer .l2{right:12px;}
+
+.performance-controls{
+    margin-top:20px;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+}
+
+.progress{
+    height:8px;
+    background:#1b2037;
+    border-radius:20px;
+    overflow:hidden;
+    margin:15px auto;
+    max-width:600px;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(
+        90deg,
+        var(--pink),
+        var(--cyan)
+    );
+}
+
+/* ================= SCORE ================= */
+
+.score-box{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-top:20px;
+}
+
+.score-item{
+    background:#0c1021;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:15px;
+}
+
+.score-item span{
+    color:var(--muted);
+    font-size:11px;
+}
+
+.score-item strong{
+    display:block;
+    font-size:25px;
+    margin-top:5px;
+}
+
+.result{
+    text-align:center;
+    margin-top:20px;
+    padding:20px;
+    border-radius:15px;
+    background:linear-gradient(
+        135deg,
+        rgba(255,98,181,.12),
+        rgba(98,221,255,.08)
+    );
+}
+
+/* ================= ENDING FAIRY ================= */
+
+.fairy{
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:30;
+    background:rgba(5,7,18,.88);
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    animation:fade .5s;
+}
+
+.fairy.show{
+    display:flex;
+}
+
+@keyframes fade{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+
+.fairy h2{
+    color:var(--gold);
+    font-size:42px;
+    text-shadow:0 0 25px #ff9ce0;
+}
+
+.fairy p{
+    margin-top:10px;
+    color:#d8dbea;
+}
+
+.fairy-face{
+    width:140px;
+    height:170px;
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            #ffd6c1,
+            #b55f8f
+        );
+    border-radius:50%;
+    margin:20px;
+    box-shadow:
+        0 0 50px rgba(255,98,181,.5);
+}
+
+/* ================= RANKING ================= */
+
+.ranking{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.ranking th,
+.ranking td{
+    padding:15px;
+    text-align:left;
+    border-bottom:1px solid var(--border);
+}
+
+.ranking th{
+    color:var(--muted);
+    font-size:11px;
+}
+
+.ranking td{
+    font-size:13px;
+}
+
+.rank{
+    font-size:22px;
+    font-weight:900;
+    color:var(--gold);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+
+    .sidebar{
+        width:70px;
+    }
+
+    .menu-title{
+        display:none;
+    }
+
+    .menu button{
+        font-size:0;
+        text-align:center;
+    }
+
+    .menu button:first-letter{
+        font-size:20px;
+    }
+
+    .grid,
+    .map-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .member-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .makeover{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:650px){
+
+    header{
+        padding:0 15px;
+    }
+
+    .content{
+        padding:20px 12px;
+    }
+
+    .grid,
+    .map-grid,
+    .member-grid{
+        grid-template-columns:1fr;
+    }
+
+    .sidebar{
+        display:none;
+    }
+
+    .score-box{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .stage{
+        height:420px;
+    }
+
+    .dancers{
+        gap:8px;
+    }
+
+    .dancer{
+        transform:scale(.75);
+    }
+
+    .hero h1{
+        font-size:30px;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+<div class="logo">
+    STAR<span>IDOL</span>
+</div>
+
+<div class="money">
+    <div>💎 <b id="gems">2,500</b></div>
+    <div>💰 <b id="coins">50,000</b></div>
+</div>
+
+</header>
+
+
+<div class="app">
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+<div class="menu-title">
+    MAIN
+</div>
+
+<div class="menu">
+
+<button class="active" onclick="showPage('dashboard',this)">
+    🏠 Dashboard
+</button>
+
+<button onclick="showPage('groups',this)">
+    👥 My Groups
+</button>
+
+<button onclick="showPage('members',this)">
+    👩‍🎤 Members
+</button>
+
+<button onclick="showPage('makeover',this)">
+    💄 Makeover
+</button>
+
+<button onclick="showPage('maps',this)">
+    🗺️ World
+</button>
+
+<button onclick="showPage('performance',this)">
+    🎤 Performance
+</button>
+
+<button onclick="showPage('ranking',this)">
+    🏆 Competition
+</button>
+
+</div>
+
+<div class="menu-title">
+    SYSTEM
+</div>
+
+<div class="menu">
+
+<button onclick="resetGame()">
+    🔄 New Game
+</button>
+
+</div>
+
+</aside>
+
+
+<!-- ================= CONTENT ================= -->
+
+<main class="content">
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section
+    id="dashboard"
+    class="page active">
+
+<div class="page-title">
+    Welcome to STAR IDOL ✨
+</div>
+
+<div class="page-subtitle">
+    Bangun girl group impianmu dan bawa mereka menjadi idol terbaik.
+</div>
+
+
+<div class="grid">
+
+<div class="card">
+
+<h3>👥 Total Groups</h3>
+
+<div style="
+font-size:38px;
+font-weight:900;
+margin-top:15px;"
+id="totalGroups">
+0
+</div>
+
+<p class="page-subtitle">
+    Girl group yang kamu kelola.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>⭐ Popularity</h3>
+
+<div style="
+font-size:38px;
+font-weight:900;
+margin-top:15px;"
+id="popularity">
+0
+</div>
+
+<p class="page-subtitle">
+    Total popularitas agency.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>🏆 Competition Wins</h3>
+
+<div style="
+font-size:38px;
+font-weight:900;
+margin-top:15px;"
+id="wins">
+0
+</div>
+
+<p class="page-subtitle">
+    Kemenangan yang diperoleh.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="card" style="margin-top:20px;">
+
+<h2>
+    🚀 Quick Start
+</h2>
+
+<p class="page-subtitle">
+    Buat girl group pertama kamu untuk memulai perjalanan.
+</p>
+
+<button
+    class="btn"
+    onclick="showPage('groups')">
+
+    + Create Girl Group
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ================= GROUPS ================= -->
+
+<section
+    id="groups"
+    class="page">
+
+<div class="page-title">
+    My Girl Groups
+</div>
+
+<div class="page-subtitle">
+    Buat dan kelola grup sebanyak yang kamu inginkan.
+</div>
+
+
+<div class="card creator">
+
+<h2>
+    ✨ Create New Girl Group
+</h2>
+
+<label>
+    Nama Group
+</label>
+
+<input
+    id="groupName"
+    placeholder="Contoh: LUMINA">
+
+
+<label>
+    Jumlah Member
+</label>
+
+<div class="member-count">
+
+<button onclick="setMemberCount(2,this)">2</button>
+<button onclick="setMemberCount(3,this)">3</button>
+<button onclick="setMemberCount(4,this)">4</button>
+<button onclick="setMemberCount(5,this)">5</button>
+<button onclick="setMemberCount(6,this)">6</button>
+<button onclick="setMemberCount(7,this)">7</button>
+<button onclick="setMemberCount(8,this)">8</button>
+<button onclick="setMemberCount(9,this)">9</button>
+
+</div>
+
+
+<label>
+    Konsep
+</label>
+
+<select id="groupConcept">
+
+<option>Elegant</option>
+<option>Girl Crush</option>
+<option>Fresh</option>
+<option>Dark</option>
+<option>Dreamy</option>
+<option>Cyber</option>
+</select>
+
+
+<br><br>
+
+<button
+    class="btn"
+    onclick="createGroup()">
+
+    Create Group ✨
+
+</button>
+
+</div>
+
+
+<div
+    id="groupList"
+    class="grid"
+    style="margin-top:20px;">
+</div>
+
+</section>
+
+
+<!-- ================= MEMBERS ================= -->
+
+<section
+    id="members"
+    class="page">
+
+<div class="page-title">
+    Members
+</div>
+
+<div class="page-subtitle">
+    Semua idol yang ada di agency kamu.
+</div>
+
+<div
+    id="memberList"
+    class="member-grid">
+</div>
+
+</section>
+
+
+<!-- ================= MAKEOVER ================= -->
+
+<section
+    id="makeover"
+    class="page">
+
+<div class="page-title">
+    Idol Makeover 💄
+</div>
+
+<div class="page-subtitle">
+    Ubah hairstyle, outfit dan style setiap member.
+</div>
+
+
+<div class="makeover">
+
+<div class="card">
+
+<div
+    class="avatar-large"
+    id="makeoverAvatar">
+
+<div class="body"></div>
+<div class="head"></div>
+<div class="hair black"></div>
+<div class="face">•ᴗ•</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2 id="makeoverName">
+    Pilih Member
+</h2>
+
+<label>
+    Hairstyle
+</label>
+
+<div class="options">
+
+<div class="option" onclick="changeHair('black')">
+    🖤 Black
+</div>
+
+<div class="option" onclick="changeHair('brown')">
+    🤎 Brown
+</div>
+
+<div class="option" onclick="changeHair('blonde')">
+    💛 Blonde
+</div>
+
+<div class="option" onclick="changeHair('pink')">
+    💗 Pink
+</div>
+
+<div class="option" onclick="changeHair('blue')">
+    💙 Blue
+</div>
+
+</div>
+
+
+<label>
+    Outfit
+</label>
+
+<div class="options">
+
+<div class="option" onclick="changeOutfit('#ff62b5')">
+    💗 Pink
+</div>
+
+<div class="option" onclick="changeOutfit('#62ddff')">
+    💙 Aqua
+</div>
+
+<div class="option" onclick="changeOutfit('#8b6cff')">
+    💜 Purple
+</div>
+
+<div class="option" onclick="changeOutfit('#ffd86b')">
+    💛 Gold
+</div>
+
+<div class="option" onclick="changeOutfit('#ffffff')">
+    🤍 White
+</div>
+
+</div>
+
+
+<label>
+    Select Member
+</label>
+
+<select
+    id="makeoverSelect"
+    onchange="selectMakeoverMember()">
+</select>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= MAPS ================= -->
+
+<section
+    id="maps"
+    class="page">
+
+<div class="page-title">
+    World Map 🗺️
+</div>
+
+<div class="page-subtitle">
+    Pilih lokasi untuk melakukan performance.
+</div>
+
+
+<div class="map-grid">
+
+<div
+    class="map stage1"
+    onclick="selectMap('Moonlight Arena')">
+
+<h3>🌙 Moonlight Arena</h3>
+<p>Elegant • 8,500 capacity</p>
+
+</div>
+
+
+<div
+    class="map stage2"
+    onclick="selectMap('Ocean Dome')">
+
+<h3>🌊 Ocean Dome</h3>
+<p>Fresh • 12,000 capacity</p>
+
+</div>
+
+
+<div
+    class="map stage3"
+    onclick="selectMap('Golden Festival')">
+
+<h3>✨ Golden Festival</h3>
+<p>Festival • 20,000 capacity</p>
+
+</div>
+
+
+<div
+    class="map stage4"
+    onclick="selectMap('Galaxy Stage')">
+
+<h3>🌌 Galaxy Stage</h3>
+<p>Dreamy • 30,000 capacity</p>
+
+</div>
+
+
+<div
+    class="map stage5"
+    onclick="selectMap('Neon Garden')">
+
+<h3>🌿 Neon Garden</h3>
+<p>Fresh • 18,000 capacity</p>
+
+</div>
+
+
+<div
+    class="map stage6"
+    onclick="selectMap('Royal Concert')">
+
+<h3>👑 Royal Concert</h3>
+<p>Premium • 50,000 capacity</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= PERFORMANCE ================= -->
+
+<section
+    id="performance"
+    class="page">
+
+<div class="page-title">
+    Live Performance 🎤
+</div>
+
+<div class="page-subtitle">
+    Tampilkan grup kamu di atas panggung.
+</div>
+
+
+<div class="card performance">
+
+<div
+    id="selectedStage"
+    style="
+    color:var(--pink);
+    font-weight:bold;
+    margin-bottom:10px;">
+    Moonlight Arena
+</div>
+
+
+<div class="stage">
+
+<div class="laser l1"></div>
+<div class="laser l2"></div>
+<div class="laser l3"></div>
+<div class="laser l4"></div>
+
+<div class="stage-floor"></div>
+
+
+<div
+    class="dancers"
+    id="dancers">
+</div>
+
+
+<div
+    class="fairy"
+    id="fairy">
+
+<div class="fairy-face"></div>
+
+<h2>
+    ENDING FAIRY ✨
+</h2>
+
+<p id="fairyName">
+    STAR IDOL
+</p>
+
+</div>
+
+</div>
+
+
+<div class="progress">
+
+<div
+    class="progress-bar"
+    id="performanceProgress">
+</div>
+
+</div>
+
+
+<div class="performance-controls">
+
+<button
+    class="btn"
+    onclick="startPerformance()">
+
+    ▶ START PERFORMANCE
+
+</button>
+
+<button
+    class="btn secondary"
+    onclick="showPage('ranking')">
+
+    🏆 Competition
+
+</button>
+
+</div>
+
+
+<div
+    id="performanceResult"
+    style="margin-top:20px;">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= RANKING ================= -->
+
+<section
+    id="ranking"
+    class="page">
+
+<div class="page-title">
+    Competition 🏆
+</div>
+
+<div class="page-subtitle">
+    Semua grup bersaing untuk mendapatkan posisi pertama.
+</div>
+
+
+<div class="card">
+
+<table class="ranking">
+
+<thead>
+
+<tr>
+<th>#</th>
+<th>Group</th>
+<th>Members</th>
+<th>Performance</th>
+<th>Popularity</th>
+</tr>
+
+</thead>
+
+<tbody
+id="rankingBody">
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   GAME DATA
+========================================================= */
+
+let game = {
+
+    gems:2500,
+
+    coins:50000,
+
+    wins:0,
+
+    groups:[],
+
+    selectedMember:null,
+
+    selectedMap:"Moonlight Arena"
+
+};
+
+
+/* =========================================================
+   MEMBER NAMES
+========================================================= */
+
+const names = [
+    "Ari",
+    "Mina",
+    "Yuna",
+    "Sora",
+    "Nari",
+    "Rina",
+    "Hana",
+    "Mira",
+    "Lia"
+];
+
+
+/* =========================================================
+   LOAD
+========================================================= */
+
+function save(){
+
+    localStorage.setItem(
+        "starIdolGame",
+        JSON.stringify(game)
+    );
+
+}
+
+
+function load(){
+
+    const saved =
+        localStorage.getItem(
+            "starIdolGame"
+        );
+
+    if(saved){
+
+        game =
+            JSON.parse(saved);
+
+    }
+
+}
+
+
+/* =========================================================
+   PAGE NAVIGATION
+========================================================= */
+
+function showPage(
+    page,
+    button
+){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            p =>
+            p.classList.remove(
+                "active"
+            )
+        );
+
+
+    const target =
+        document.getElementById(
+            page
+        );
+
+
+    if(target){
+
+        target.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if(button){
+
+        document
+            .querySelectorAll(
+                ".menu button"
+            )
+            .forEach(
+                b =>
+                b.classList.remove(
+                    "active"
+                )
+            );
+
+        button.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if(page === "groups")
+        renderGroups();
+
+    if(page === "members")
+        renderMembers();
+
+    if(page === "makeover")
+        renderMakeover();
+
+    if(page === "ranking")
+        renderRanking();
+
+}
+
+
+/* =========================================================
+   MEMBER COUNT
+========================================================= */
+
+let selectedCount = 4;
+
+
+function setMemberCount(
+    count,
+    button
+){
+
+    selectedCount =
+        count;
+
+
+    document
+        .querySelectorAll(
+            ".member-count button"
+        )
+        .forEach(
+            b =>
+            b.classList.remove(
+                "selected"
+            )
+        );
+
+
+    button.classList.add(
+        "selected"
+    );
+
+}
+
+
+/* =========================================================
+   CREATE GROUP
+========================================================= */
+
+function createGroup(){
+
+    const name =
+        document
+        .getElementById(
+            "groupName"
+        )
+        .value
+        .trim();
+
+
+    const concept =
+        document
+        .getElementById(
+            "groupConcept"
+        )
+        .value;
+
+
+    if(!name){
+
+        alert(
+            "Masukkan nama group terlebih dahulu."
+        );
+
+        return;
+
+    }
+
+
+    const members = [];
+
+
+    for(
+        let i=0;
+        i<selectedCount;
+        i++
+    ){
+
+        members.push({
+
+            name:
+                names[
+                    i % names.length
+                ],
+
+            hair:"black",
+
+            outfit:"#ff62b5",
+
+            vocal:
+                random(70,95),
+
+            dance:
+                random(70,98),
+
+            visual:
+                random(70,99),
+
+            stage:
+                random(70,96)
+
+        });
+
+    }
+
+
+    const group = {
+
+        id:
+            Date.now(),
+
+        name:name,
+
+        concept:concept,
+
+        members:members,
+
+        popularity:
+            random(50,80),
+
+        wins:0,
+
+        performance:0
+
+    };
+
+
+    game.groups.push(
+        group
+    );
+
+
+    game.coins -= 5000;
+
+
+    save();
+
+    updateUI();
+
+    document
+        .getElementById(
+            "groupName"
+        )
+        .value = "";
+
+
+    renderGroups();
+
+    alert(
+        name +
+        " berhasil dibuat! ✨"
+    );
+
+}
+
+
+/* =========================================================
+   RANDOM
+========================================================= */
+
+function random(min,max){
+
+    return Math.floor(
+        Math.random() *
+        (max-min+1)
+    ) + min;
+
+}
+
+
+/* =========================================================
+   RENDER GROUPS
+========================================================= */
+
+function renderGroups(){
+
+    const container =
+        document.getElementById(
+            "groupList"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if(
+        game.groups.length === 0
+    ){
+
+        container.innerHTML = `
+
+        <div class="card">
+
+            <h2>Belum ada group</h2>
+
+            <p class="page-subtitle">
+                Buat girl group pertamamu.
+            </p>
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    game.groups.forEach(
+        group => {
+
+            const average =
+                Math.round(
+                    group.members.reduce(
+                        (
+                            sum,
+                            member
+                        ) =>
+                            sum +
+                            member.stage,
+                        0
+                    ) /
+                    group.members.length
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "card group-card";
+
+
+            card.innerHTML = `
+
+                <div class="group-cover">
+                    ${getConceptEmoji(group.concept)}
+                </div>
+
+                <div class="group-name">
+                    ${group.name}
+                </div>
+
+                <div class="group-info">
+                    ${group.concept}
+                    • ${group.members.length}
+                    members
+                </div>
+
+                <div class="stats">
+
+                    <div>
+                        <strong>
+                            ${average}
+                        </strong>
+                        Stage
+                    </div>
+
+                    <div>
+                        <strong>
+                            ${group.popularity}
+                        </strong>
+                        Popularity
+                    </div>
+
+                    <div>
+                        <strong>
+                            ${group.wins}
+                        </strong>
+                        Wins
+                    </div>
+
+                </div>
+
+                <br>
+
+                <button
+                    class="btn"
+                    onclick="performGroup(${group.id})">
+
+                    Perform
+
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+function getConceptEmoji(
+    concept
+){
+
+    const map = {
+
+        Elegant:"👑",
+
+        "Girl Crush":"🔥",
+
+        Fresh:"🍋",
+
+        Dark:"🌙",
+
+        Dreamy:"✨",
+
+        Cyber:"💿"
+
+    };
+
+
+    return map[concept] || "🎤";
+
+}
+
+
+/* =========================================================
+   MEMBERS
+========================================================= */
+
+function renderMembers(){
+
+    const container =
+        document.getElementById(
+            "memberList"
+        );
+
+
+    container.innerHTML = "";
+
+
+    game.groups.forEach(
+        group => {
+
+            group.members.forEach(
+                (member,index) => {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "member";
+
+
+                    div.innerHTML = `
+
+                    <div
+                        class="member-avatar">
+
+                        <div class="body"></div>
+
+                        <div class="head"></div>
+
+                        <div class="hair ${member.hair}"></div>
+
+                        <div class="face">
+                            •ᴗ•
+                        </div>
+
+                    </div>
+
+                    <div class="member-info">
+
+                        <h3>
+                            ${member.name}
+                        </h3>
+
+                        <p>
+                            ${group.name}
+                        </p>
+
+                        <div class="member-actions">
+
+                            <button
+                                onclick="
+                                openMakeover(
+                                    ${group.id},
+                                    ${index}
+                                )">
+
+                                💄 Makeover
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    `;
+
+
+                    container.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    if(
+        container.innerHTML === ""
+    ){
+
+        container.innerHTML = `
+
+        <div class="card">
+
+            Belum ada member.
+
+        </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   MAKEOVER
+========================================================= */
+
+function renderMakeover(){
+
+    const select =
+        document.getElementById(
+            "makeoverSelect"
+        );
+
+
+    select.innerHTML = "";
+
+
+    game.groups.forEach(
+        group => {
+
+            group.members.forEach(
+                (member,index) => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        group.id +
+                        "-" +
+                        index;
+
+
+                    option.textContent =
+                        member.name +
+                        " — " +
+                        group.name;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    if(
+        select.options.length
+    ){
+
+        select.selectedIndex = 0;
+
+        selectMakeoverMember();
+
+    }
+
+}
+
+
+function selectMakeoverMember(){
+
+    const value =
+        document
+        .getElementById(
+            "makeoverSelect"
+        )
+        .value;
+
+
+    if(!value)
+        return;
+
+
+    const parts =
+        value.split("-");
+
+
+    game.selectedMember = {
+
+        groupId:
+            Number(parts[0]),
+
+        index:
+            Number(parts[1])
+
+    };
+
+
+    updateMakeoverAvatar();
+
+}
+
+
+function openMakeover(
+    groupId,
+    index
+){
+
+    game.selectedMember = {
+
+        groupId:groupId,
+
+        index:index
+
+    };
+
+
+    showPage(
+        "makeover"
+    );
+
+
+    renderMakeover();
+
+
+    const select =
+        document.getElementById(
+            "makeoverSelect"
+        );
+
+
+    select.value =
+        groupId +
+        "-" +
+        index;
+
+
+    selectMakeoverMember();
+
+}
+
+
+function getSelectedMember(){
+
+    if(!game.selectedMember)
+        return null;
+
+
+    const group =
+        game.groups.find(
+            g =>
+            g.id ===
+            game.selectedMember.groupId
+        );
+
+
+    if(!group)
+        return null;
+
+
+    return group.members[
+        game.selectedMember.index
+    ];
+
+}
+
+
+function updateMakeoverAvatar(){
+
+    const member =
+        getSelectedMember();
+
+
+    if(!member)
+        return;
+
+
+    const avatar =
+        document.getElementById(
+            "makeoverAvatar"
+        );
+
+
+    const hair =
+        avatar.querySelector(
+            ".hair"
+        );
+
+
+    const body =
+        avatar.querySelector(
+            ".body"
+        );
+
+
+    document.getElementById(
+        "makeoverName"
+    ).textContent =
+        member.name;
+
+
+    hair.className =
+        "hair " +
+        member.hair;
+
+
+    body.style.background =
+        member.outfit;
+
+}
+
+
+function changeHair(
+    color
+){
+
+    const member =
+        getSelectedMember();
+
+
+    if(!member)
+        return;
+
+
+    member.hair =
+        color;
+
+
+    save();
+
+    updateMakeoverAvatar();
+
+}
+
+
+function changeOutfit(
+    color
+){
+
+    const member =
+        getSelectedMember();
+
+
+    if(!member)
+        return;
+
+
+    member.outfit =
+        color;
+
+
+    save();
+
+    updateMakeoverAvatar();
+
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+function selectMap(
+    name
+){
+
+    game.selectedMap =
+        name;
+
+
+    document.getElementById(
+        "selectedStage"
+    ).textContent =
+        name;
+
+
+    showPage(
+        "performance"
+    );
+
+}
+
+
+/* =========================================================
+   PERFORMANCE
+========================================================= */
+
+function performGroup(
+    id
+){
+
+    game.performanceGroup =
+        id;
+
+
+    showPage(
+        "performance"
+    );
+
+
+    preparePerformance();
+
+}
+
+
+function preparePerformance(){
+
+    const group =
+        game.groups.find(
+            g =>
+            g.id ===
+            game.performanceGroup
+        );
+
+
+    if(!group){
+
+        if(game.groups.length){
+
+            game.performanceGroup =
+                game.groups[0].id;
+
+        }
+
+        else{
+
+            alert(
+                "Buat group terlebih dahulu."
+            );
+
+            showPage(
+                "groups"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    const current =
+        game.groups.find(
+            g =>
+            g.id ===
+            game.performanceGroup
+        );
+
+
+    document.getElementById(
+        "fairyName"
+    ).textContent =
+        current.name;
+
+
+    document.getElementById(
+        "selectedStage"
+    ).textContent =
+        game.selectedMap;
+
+
+    createDancers(
+        current.members.length
+    );
+
+}
+
+
+function createDancers(
+    count
+){
+
+    const container =
+        document.getElementById(
+            "dancers"
+        );
+
+
+    container.innerHTML = "";
+
+
+    for(
+        let i=0;
+        i<count;
+        i++
+    ){
+
+        const dancer =
+            document.createElement(
+                "div"
+            );
+
+
+        dancer.className =
+            "dancer";
+
+
+        dancer.innerHTML = `
+
+            <div class="dhair"></div>
+
+            <div class="dhead"></div>
+
+            <div class="dbody"></div>
+
+            <div class="arm a1"></div>
+
+            <div class="arm a2"></div>
+
+            <div class="leg l1"></div>
+
+            <div class="leg l2"></div>
+
+        `;
+
+
+        container.appendChild(
+            dancer
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   START PERFORMANCE
+========================================================= */
+
+function startPerformance(){
+
+    if(
+        game.groups.length === 0
+    ){
+
+        alert(
+            "Buat girl group terlebih dahulu."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !game.performanceGroup
+    ){
+
+        game.performanceGroup =
+            game.groups[0].id;
+
+    }
+
+
+    const group =
+        game.groups.find(
+            g =>
+            g.id ===
+            game.performanceGroup
+        );
+
+
+    createDancers(
+        group.members.length
+    );
+
+
+    const progress =
+        document.getElementById(
+            "performanceProgress"
+        );
+
+
+    const result =
+        document.getElementById(
+            "performanceResult"
+        );
+
+
+    const fairy =
+        document.getElementById(
+            "fairy"
+        );
+
+
+    progress.style.width =
+        "0%";
+
+
+    result.innerHTML =
+        "🎤 Performance dimulai...";
+
+
+    fairy.classList.remove(
+        "show"
+    );
+
+
+    let value = 0;
+
+
+    const interval =
+        setInterval(
+            () => {
+
+                value += 2;
+
+
+                progress.style.width =
+                    value + "%";
+
+
+                if(
+                    value >= 100
+                ){
+
+                    clearInterval(
+                        interval
+                    );
+
+
+                    finishPerformance(
+                        group
+                    );
+
+                }
+
+            },
+            70
+        );
+
+}
+
+
+/* =========================================================
+   FINISH PERFORMANCE
+========================================================= */
+
+function finishPerformance(
+    group
+){
+
+    const avgDance =
+        average(
+            group.members.map(
+                m => m.dance
+            )
+        );
+
+
+    const avgVocal =
+        average(
+            group.members.map(
+                m => m.vocal
+            )
+        );
+
+
+    const avgVisual =
+        average(
+            group.members.map(
+                m => m.visual
+            )
+        );
+
+
+    const avgStage =
+        average(
+            group.members.map(
+                m => m.stage
+            )
+        );
+
+
+    const synchronization =
+        Math.round(
+            (
+                avgDance +
+                avgStage
+            ) / 2
+        );
+
+
+    const score =
+        Math.round(
+            (
+                avgDance +
+                avgVocal +
+                avgVisual +
+                avgStage +
+                synchronization
+            ) / 5
+        );
+
+
+    group.performance =
+        score;
+
+
+    group.popularity =
+        Math.min(
+            100,
+            group.popularity +
+            Math.floor(
+                score / 25
+            )
+        );
+
+
+    if(score >= 90){
+
+        group.wins++;
+
+        game.wins++;
+
+    }
+
+
+    save();
+
+    updateUI();
+
+
+    const result =
+        document.getElementById(
+            "performanceResult"
+        );
+
+
+    result.innerHTML = `
+
+        <div class="score-box">
+
+            <div class="score-item">
+                <span>Dance</span>
+                <strong>
+                    ${avgDance}
+                </strong>
+            </div>
+
+            <div class="score-item">
+                <span>Vocal</span>
+                <strong>
+                    ${avgVocal}
+                </strong>
+            </div>
+
+            <div class="score-item">
+                <span>Stage Presence</span>
+                <strong>
+                    ${avgStage}
+                </strong>
+            </div>
+
+            <div class="score-item">
+                <span>Synchronization</span>
+                <strong>
+                    ${synchronization}
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="result">
+
+            <div style="
+                color:var(--muted);
+                font-size:12px;">
+                FINAL PERFORMANCE SCORE
+            </div>
+
+            <div style="
+                font-size:48px;
+                font-weight:900;
+                color:var(--pink);
+                margin:5px;">
+                ${score}
+            </div>
+
+            <div>
+                ${score >= 90
+                    ? "🏆 WINNER PERFORMANCE!"
+                    : "✨ Great performance!"}
+            </div>
+
+        </div>
+
+    `;
+
+
+    /*
+       Ending Fairy
+    */
+
+    setTimeout(
+        () => {
+
+            document
+                .getElementById(
+                    "fairy"
+                )
+                .classList.add(
+                    "show"
+                );
+
+        },
+        800
+    );
+
+}
+
+
+/* =========================================================
+   AVERAGE
+========================================================= */
+
+function average(
+    arr
+){
+
+    if(!arr.length)
+        return 0;
+
+
+    return Math.round(
+        arr.reduce(
+            (a,b) =>
+                a+b,
+            0
+        ) /
+        arr.length
+    );
+
+}
+
+
+/* =========================================================
+   RANKING
+========================================================= */
+
+function renderRanking(){
+
+    const body =
+        document.getElementById(
+            "rankingBody"
+        );
+
+
+    body.innerHTML = "";
+
+
+    const groups =
+        [...game.groups]
+        .sort(
+            (a,b) =>
+                b.performance -
+                a.performance
+        );
+
+
+    groups.forEach(
+        (group,index) => {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            tr.innerHTML = `
+
+                <td class="rank">
+                    ${index + 1}
+                </td>
+
+                <td>
+                    <b>
+                        ${group.name}
+                    </b>
+                    <br>
+                    <small style="color:#777f9c">
+                        ${group.concept}
+                    </small>
+                </td>
+
+                <td>
+                    ${group.members.length}
+                </td>
+
+                <td>
+                    ${group.performance || "—"}
+                </td>
+
+                <td>
+                    ⭐ ${group.popularity}
+                </td>
+
+            `;
+
+
+            body.appendChild(
+                tr
+            );
+
+        }
+    );
+
+
+    if(!groups.length){
+
+        body.innerHTML = `
+
+            <tr>
+                <td colspan="5">
+                    Belum ada group.
+                </td>
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE UI
+========================================================= */
+
+function updateUI(){
+
+    document.getElementById(
+        "gems"
+    ).textContent =
+        game.gems.toLocaleString();
+
+
+    document.getElementById(
+        "coins"
+    ).textContent =
+        game.coins.toLocaleString();
+
+
+    document.getElementById(
+        "totalGroups"
+    ).textContent =
+        game.groups.length;
+
+
+    const popularity =
+        game.groups.reduce(
+            (sum,g) =>
+                sum +
+                g.popularity,
+            0
+        );
+
+
+    document.getElementById(
+        "popularity"
+    ).textContent =
+        popularity;
+
+
+    document.getElementById(
+        "wins"
+    ).textContent =
+        game.wins;
+
+
+    renderGroups();
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetGame(){
+
+    const confirmReset =
+        confirm(
+            "Hapus semua data game?"
+        );
+
+
+    if(!confirmReset)
+        return;
+
+
+    localStorage.removeItem(
+        "starIdolGame"
+    );
+
+
+    location.reload();
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+load();
+
+updateUI();
+
+</script>
+
+</body>
+</html>
